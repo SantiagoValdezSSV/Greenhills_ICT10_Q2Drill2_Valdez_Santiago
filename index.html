@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Club Members</title>
+  <link rel="stylesheet" href="https://pyscript.net/releases/2024.1.1/core.css">
+  <script type="module" src="https://pyscript.net/releases/2024.1.1/core.js"></script>
+  <style>
+    /* ===== Reset ===== */
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* ===== Animated Background ===== */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      min-height: 100vh;
+      background: linear-gradient(-45deg, #0f0c29, #302b63, #24243e, #1a1a2e);
+      background-size: 400% 400%;
+      animation: bgShift 15s ease infinite;
+      color: #e0e0e0;
+      display: flex;
+      justify-content: center;
+      padding: 40px 20px;
+      overflow-x: hidden;
+    }
+
+    @keyframes bgShift {
+      0%   { background-position: 0% 50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* ===== Floating Orbs (CSS-only) ===== */
+    body::before,
+    body::after {
+      content: '';
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.3;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    body::before {
+      width: 400px;
+      height: 400px;
+      background: #7b2ff7;
+      top: -100px;
+      right: -100px;
+      animation: orbFloat1 8s ease-in-out infinite;
+    }
+
+    body::after {
+      width: 350px;
+      height: 350px;
+      background: #00d2ff;
+      bottom: -80px;
+      left: -80px;
+      animation: orbFloat2 10s ease-in-out infinite;
+    }
+
+    @keyframes orbFloat1 {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      50%      { transform: translate(-60px, 80px) scale(1.15); }
+    }
+
+    @keyframes orbFloat2 {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      50%      { transform: translate(70px, -60px) scale(1.1); }
+    }
+
+    /* ===== Particles ===== */
+    .particles {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: -1;
+      overflow: hidden;
+    }
+
+    .particles span {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: rgba(123, 47, 247, 0.4);
+      border-radius: 50%;
+      animation: rise linear infinite;
+    }
+
+    .particles span:nth-child(1)  { left:  5%; width: 3px; height: 3px; animation-duration: 12s; animation-delay: 0s; }
+    .particles span:nth-child(2)  { left: 15%; width: 5px; height: 5px; animation-duration: 18s; animation-delay: 2s; background: rgba(0,210,255,0.3); }
+    .particles span:nth-child(3)  { left: 28%; animation-duration: 14s; animation-delay: 4s; }
+    .particles span:nth-child(4)  { left: 40%; width: 6px; height: 6px; animation-duration: 20s; animation-delay: 1s; background: rgba(255,111,216,0.25); }
+    .particles span:nth-child(5)  { left: 55%; width: 3px; height: 3px; animation-duration: 16s; animation-delay: 3s; }
+    .particles span:nth-child(6)  { left: 68%; animation-duration: 22s; animation-delay: 5s; background: rgba(0,210,255,0.25); }
+    .particles span:nth-child(7)  { left: 78%; width: 5px; height: 5px; animation-duration: 13s; animation-delay: 0s; }
+    .particles span:nth-child(8)  { left: 88%; animation-duration: 19s; animation-delay: 6s; background: rgba(255,111,216,0.2); }
+    .particles span:nth-child(9)  { left: 35%; width: 3px; height: 3px; animation-duration: 17s; animation-delay: 7s; }
+    .particles span:nth-child(10) { left: 92%; width: 4px; height: 4px; animation-duration: 15s; animation-delay: 2s; background: rgba(0,230,118,0.25); }
+
+    @keyframes rise {
+      0%   { transform: translateY(100vh) rotate(0deg);   opacity: 0; }
+      10%  { opacity: 1; }
+      90%  { opacity: 1; }
+      100% { transform: translateY(-10vh) rotate(720deg);  opacity: 0; }
+    }
+
+    /* ===== Main Wrapper ===== */
+    .app {
+      width: 100%;
+      max-width: 620px;
+      animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(50px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== Header ===== */
+    h1 {
+      text-align: center;
+      font-size: 2.8rem;
+      font-weight: 800;
+      margin-bottom: 35px;
+      background: linear-gradient(90deg, #00d2ff, #7b2ff7, #ff6fd8, #00d2ff);
+      background-size: 300% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: textShimmer 5s linear infinite;
+      letter-spacing: -0.5px;
+      position: relative;
+    }
+
+    h1::after {
+      content: '';
+      display: block;
+      width: 80px;
+      height: 4px;
+      background: linear-gradient(90deg, #7b2ff7, #00d2ff);
+      border-radius: 4px;
+      margin: 14px auto 0;
+      animation: barPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes textShimmer {
+      to { background-position: 300% center; }
+    }
+
+    @keyframes barPulse {
+      0%, 100% { width: 80px; opacity: 0.7; }
+      50%      { width: 140px; opacity: 1; }
+    }
+
+    /* ===== Glass Card ===== */
+    .card {
+      background: rgba(255, 255, 255, 0.04);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 24px;
+      padding: 32px 28px;
+      margin-bottom: 24px;
+      box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+      transition: transform 0.35s ease, box-shadow 0.35s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow:
+        0 16px 48px rgba(0, 0, 0, 0.45),
+        inset 0 1px 0 rgba(255, 255, 255, 0.09);
+    }
+
+    .card-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: #7777aa;
+      font-weight: 700;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-label .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #7b2ff7;
+      box-shadow: 0 0 8px rgba(123, 47, 247, 0.6);
+      animation: dotPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes dotPulse {
+      0%, 100% { transform: scale(1);   opacity: 0.7; }
+      50%      { transform: scale(1.4); opacity: 1; }
+    }
+
+    /* ===== Inputs ===== */
+    .input-row {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .input-row .field {
+      flex: 1;
+      min-width: 170px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 1.4px;
+      color: #6666aa;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    input[type="text"],
+    input:not([type]) {
+      width: 100%;
+      padding: 14px 18px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 2px solid rgba(255, 255, 255, 0.07);
+      border-radius: 14px;
+      color: #fff;
+      font-size: 1rem;
+      font-family: inherit;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    input::placeholder {
+      color: #444466;
+    }
+
+    input:hover:not(:focus) {
+      border-color: rgba(255, 255, 255, 0.14);
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    input:focus {
+      border-color: #7b2ff7;
+      background: rgba(123, 47, 247, 0.06);
+      box-shadow: 0 0 0 4px rgba(123, 47, 247, 0.12), 0 0 20px rgba(123, 47, 247, 0.08);
+    }
+
+    /* ===== Button ===== */
+    button {
+      width: 100%;
+      margin-top: 20px;
+      padding: 16px 24px;
+      background: linear-gradient(135deg, #7b2ff7 0%, #5c16c5 100%);
+      border: none;
+      border-radius: 14px;
+      color: #fff;
+      font-size: 1.05rem;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      letter-spacing: 0.5px;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+      transition: left 0.55s ease;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(123, 47, 247, 0.45);
+    }
+
+    button:hover::before {
+      left: 100%;
+    }
+
+    button:active {
+      transform: translateY(0) scale(0.98);
+      box-shadow: 0 4px 15px rgba(123, 47, 247, 0.3);
+    }
+
+    /* ===== Output Area ===== */
+    #output {
+      min-height: 60px;
+    }
+
+    #output:empty::before {
+      content: '🌟  No members yet — add someone above!';
+      display: block;
+      text-align: center;
+      padding: 40px 20px;
+      color: #555577;
+      font-size: 0.95rem;
+      animation: fadeIn 0.6s ease both;
+    }
+
+    /* Style any list/table the Python injects into #output */
+    #output ul,
+    #output ol {
+      list-style: none;
+      padding: 0;
+    }
+
+    #output li,
+    #output tr,
+    #output .member {
+      padding: 14px 18px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 14px;
+      margin-bottom: 10px;
+      transition: all 0.3s ease;
+      animation: fadeSlide 0.4s ease both;
+    }
+
+    #output li:hover,
+    #output tr:hover,
+    #output .member:hover {
+      background: rgba(123, 47, 247, 0.08);
+      border-color: rgba(123, 47, 247, 0.2);
+      transform: translateX(5px);
+    }
+
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateX(-15px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    /* Style any table Python might inject */
+    #output table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0 8px;
+    }
+
+    #output th {
+      text-align: left;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: #6666aa;
+      padding: 0 18px 8px;
+      font-weight: 700;
+    }
+
+    #output td {
+      padding: 14px 18px;
+      background: rgba(255, 255, 255, 0.03);
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      transition: background 0.3s ease;
+    }
+
+    #output td:first-child {
+      border-left: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 14px 0 0 14px;
+    }
+
+    #output td:last-child {
+      border-right: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 0 14px 14px 0;
+    }
+
+    #output tr:hover td {
+      background: rgba(123, 47, 247, 0.08);
+    }
+
+    /* Style any paragraph/text Python injects */
+    #output p {
+      padding: 12px 18px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      margin-bottom: 8px;
+      transition: all 0.3s ease;
+      animation: fadeSlide 0.4s ease both;
+    }
+
+    #output p:hover {
+      background: rgba(123, 47, 247, 0.07);
+      border-color: rgba(123, 47, 247, 0.15);
+      transform: translateX(4px);
+    }
+
+    /* ===== Custom Scrollbar ===== */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(123, 47, 247, 0.3);
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(123, 47, 247, 0.5);
+    }
+
+    /* ===== Responsive ===== */
+    @media (max-width: 500px) {
+      body { padding: 24px 14px; }
+      h1 { font-size: 2rem; }
+      .card { padding: 24px 18px; border-radius: 18px; }
+      .input-row { flex-direction: column; gap: 10px; }
+      .field { min-width: 100%; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Floating Particles -->
+  <div class="particles">
+    <span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span>
+  </div>
+
+  <div class="app">
+
+    <h1>🎓 Student Club Members</h1>
+
+    <!-- Input Card -->
+    <div class="card">
+      <div class="card-label"><span class="dot"></span> New Member</div>
+      <div class="input-row">
+        <div class="field">
+          <label for="first-name">First Name</label>
+          <input id="first-name" placeholder="e.g. John">
+        </div>
+        <div class="field">
+          <label for="last-name">Last Name</label>
+          <input id="last-name" placeholder="e.g. Doe">
+        </div>
+      </div>
+      <button py-click="add_member">✨ Add Member</button>
+    </div>
+
+    <!-- Output Card -->
+    <div class="card">
+      <div class="card-label"><span class="dot"></span> Members Directory</div>
+      <div id="output"></div>
+    </div>
+
+  </div>
+
+  <script type="py" src="main.py"></script>
+</body>
+</html>
